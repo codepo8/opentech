@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CSS Animation</title>
+<style>
+body{background:#fff;}
+p { font-family: "trebuchet MS", helvetica, arial, sans, serif; }
+section { display: block; position: relative }
+#ie6 { position: absolute; top: 125px; left: 125px; }
+#fx img { position: absolute; top: 100px; left :0; }
+#fx{ position: absolute; top: 0; left: 0; width: 300px; height: 300px;
+  -moz-translate(100,100);
+  -moz-animation: jump 2s linear infinite alternate;
+  -webkit-translate(100,100);
+  -webkit-animation: jump 2s linear infinite alternate;
+  animation: jump 2s linear infinite alternate;
+}
+@-moz-keyframes jump {
+  from { -moz-transform: rotate( -10deg ); }
+  to { -moz-transform: rotate( 180deg ); }
+}
+@-webkit-keyframes jump{
+  from { -webkit-transform: rotate( -10deg ); }
+  to { -webkit-transform: rotate( 180deg ); }
+}
+@keyframes jump{
+  from { transform: rotate( -10deg ); }
+  to { transform: rotate( 180deg ); }
+}
+</style>
+</head>
+<body>
+  <p>The quick <del>brown</del> orange fox jumps over the lazy dog</p>
+  <section>
+  <span id="fx">
+    <img src="../img/firefox.png" alt="firefox" width="50">
+  </span>
+  <img src="../img/ie6.png" alt="IE6" id="ie6" width="50">
+  </section>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Geolocation demo</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<style>
+  *{margin:0;padding:0;font-size:15px;font-family:helvetica,arial,sans-serif}
+  footer,section,header{display:block;}
+  ul{padding:0.5em 1em;}
+  output{background:#369;color:#fff;width:300px;display:block;margin:1em;
+    border-radius:10px;padding:10px}
+  li{font-weight:bold;padding:5px 0}
+  li li{padding-top:0;}
+  button{margin-left:30px;}
+  li span{font-weight:normal}
+</style>
+</head>
+<body>
+  <header><h1>Geolocation demo</h1></header>
+  <button>Find me!</button>
+  <output>
+  <ul></ul>
+  </output>
+<script>
+
+var wpid = false,
+    readings = 0,
+    output = document.querySelector( 'ul' );
+
+var b = document.querySelector( 'button' );
+b.addEventListener( 'click', function( ev ) {
+  navigator.geolocation.getCurrentPosition(
+    geosuccess, 
+    geoerror, 
+    {
+      enableHighAccuracy:true, 
+      maximumAge:30000, 
+      timeout:27000
+    }
+  );  ev.preventDefault();
+},false);
+
+function geosuccess( o ) {
+  readings++;
+  if(console) { console.log( o ); }
+  var str = '' +
+  '<li>Reading #: <span>' + readings + '</span></li>' +
+  '<li>Timestamp: <span>' + o.timestamp + '</span></li>' +
+  '<li>Coordinates:<ul>' +
+  '<li>Accuracy: <span>' + o.coords.accuracy + '</span></li>' +
+  '<li>Altitude: <span>' + o.coords.altitude + '</span></li>' +
+  '<li>AltitudeAccuracy: <span>' +o.coords.altitudeAccuracy + '</span></li>' +
+  '<li>Heading: <span>' +o.coords.heading + '</span></li>' +
+  '<li>Latitude: <span>' +o.coords.latitude + '</span></li>' +
+  '<li>Longitude: <span>' +o.coords.longitude + '</span></li>' +
+  '<li>Speed: <span>' +o.coords.speed + '</span></li>' +
+  '</ul></li>';
+  if(o.address){
+    str+=''+
+    '<li>Address:<ul>' +
+    '<li>City: <span>' + o.address.city + '</span></li>' +
+    '<li>Country: <span>' + o.address.country + '</span></li>' +
+    '<li>CountryCode: <span>' +o.address.countryCode + '</span></li>' +
+    '<li>County: <span>' +o.address.county + '</span></li>' +
+    '<li>Postal Code: <span>' +o.address.postalCode + '</span></li>' +
+    '<li>Premises: <span>' +o.address.premises + '</span></li>' +
+    '<li>Street: <span>' +o.address.street + '</span></li>' +
+    '<li>Street Number: <span>' +o.address.streetNumber + '</span></li>' +
+    '</ul></li>';
+  }
+  output.innerHTML = str;
+};
+function geoerror( o ) {
+  if(console) { console.log( o ); }
+  output.innerHTML = o.code;
+};
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple canvas example</title>
+</head>
+<body>
+<canvas></canvas>
+<script>
+  var c = document.querySelector( 'canvas' ),
+      ctx = c.getContext( '2d' );
+  c.width = 300;
+  c.height = 300;
+  c.style.background = '#ccc';
+  ctx.fillStyle = 'red';
+  ctx.translate( 150, 150 );
+  ctx.rotate( 45 * Math.PI/180 );
+  ctx.scale( 0.7, 0.7 );
+  ctx.fillRect( 10, 10, 50, 50 );
+</script>
+</body>
+</html>
