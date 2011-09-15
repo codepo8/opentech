@@ -219,6 +219,7 @@ function init() {
   setSlide();
   document.body.className = "loaded";
   setupTouchEvents();
+  window.resizeBy(1,1);
   onresize();
 }
 init();
