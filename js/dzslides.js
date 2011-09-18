@@ -2,14 +2,17 @@
  * DZSlides by Paul Rouget @paulrouget
  * heavily modified by Chris Heilmann @codepo8
  **/
-var friendWindows = [];
-var idx = 1;
-var slides;
+
+
+friendWindows = [];
+idx = 1;
+slides = null;
 
 /* Handle keys */
 
-window.onkeydown = function( e ) {
-  // Don't intercept keyboard shortcuts
+function handlekeys( e ) {
+    // Don't intercept keyboard shortcuts
+
   if ( e.altKey || e.ctrlKey || e.metaKey || e.shiftKey ) {
     return;
   }
@@ -17,21 +20,34 @@ window.onkeydown = function( e ) {
     || e.keyCode == 38 // up arrow
     || e.keyCode == 33 // page up
   ) {
-    e.preventDefault();
-    back();
+    if( presenting ) {
+      e.preventDefault();
+      back();
+    }
   }
   if ( e.keyCode == 39 // right arrow
     || e.keyCode == 40 // down arrow
     || e.keyCode == 34 // page down
   ) {
-    e.preventDefault();
-    forward();
+    if( presenting ) {
+      e.preventDefault();
+      forward();
+    }
   }
 
   if ( e.keyCode == 32) { // space
       e.preventDefault();
       toggleContent();
   }
+
+  if ( e.keyCode == 27 ) { // ESC
+    e.preventDefault();
+    presenting = false;
+    document.querySelectorAll( 'link' )[0].disabled = false;
+    document.querySelectorAll( 'link' )[1].disabled = true;
+    document.body.style.MozTransform = 'scale(1)';
+  }
+
   if ( e.keyCode == 78 ) {
     if(document.body.className.indexOf('shownotes') === -1){
       document.body.className = 'loaded shownotes';
@@ -39,11 +55,13 @@ window.onkeydown = function( e ) {
       document.body.className = 'loaded';
     }
   }
+
 };
 
 /* Touch Events */
 
 function setupTouchEvents() {
+
   var orgX, orgY;
   var newX, newY;
 
@@ -72,11 +90,13 @@ function setupTouchEvents() {
       }
     }
   }
+
 }
 
 /* Adapt the size of the slides to the window */
 
-window.onresize = function() {
+function resize() {
+
   var sx = document.body.clientWidth / window.innerWidth;
   var sy = document.body.clientHeight / window.innerHeight;
   var transform = "scale(" + ( 1 / Math.max(sx, sy ) ) + ")";
@@ -85,14 +105,19 @@ window.onresize = function() {
   document.body.style.OTransform = transform;
   document.body.style.msTransform = transform;
   document.body.style.transform = transform;
+
 };
 
 function getDetails( idx ) {
+
   var s = document.querySelector( "section:nth-of-type(" + idx + ")" );
   var d = s.querySelector( "details" );
   return d ? d.innerHTML : "";
+
 }
-window.onmessage = function( e ) {
+
+function messagein( e ) {
+
   msg = e.data;
   win = e.source;
   if ( msg === "register" ) {
@@ -120,9 +145,11 @@ window.onmessage = function( e ) {
       idx = r[1];
       setSlide();
   }
+
 };
 
 function toggleContent() {
+
   var s = document.querySelector( "section[aria-selected]" );
   if ( s ) {
       var video = s.querySelector( "video" );
@@ -134,27 +161,41 @@ function toggleContent() {
           }
       }
   }
+
 }
 
 window.onhashchange = function( e ) {
+
   var newidx = ~~window.location.hash.split( "#" )[ 1 ];
   if ( !newidx ) { newidx = 1; }
   if ( newidx == idx ) { return; }
   idx = newidx;
   setSlide();
+
 };
 
 function back() {
-  if ( idx == 1 ) { return; }
-  idx--;
-  setSlide();
+
+  if( presenting ) {
+    if ( idx == 1 ) { return; }
+    idx--;
+    setSlide();
+  }
+
 }
+
 function forward() {
-  if ( idx >= slides.length ) { return; }
-  idx++;
-  setSlide();
+
+  if( presenting ) {
+    if ( idx >= slides.length ) { return; }
+    idx++;
+    setSlide();
+  }
+
 }
+
 function setSlide() {
+
   var old = document.querySelector( "section[aria-selected]" );
   var next = document.querySelector( "section:nth-of-type("+ idx +")" );
   if ( old ) {
@@ -199,6 +240,7 @@ function setSlide() {
       }
     }
   }
+
   window.location.hash = idx;
   for ( i = 0; i < friendWindows.length; i++ ) {
     friendWindows[ i ].postMessage(
@@ -211,15 +253,22 @@ function setSlide() {
       ),"*"
     );
   }
+
 }
 
 function init() {
+
   slides = document.querySelectorAll( "body > section" );
   onhashchange();
   setSlide();
   document.body.className = "loaded";
   setupTouchEvents();
-  window.resizeBy(1,1);
-  onresize();
+  window.addEventListener( 'message', messagein, false );
+  window.addEventListener( 'keydown', handlekeys, false );
+  window.addEventListener( 'resize', resize, false );
+  presenting = true;
+  resize();
+
 }
+
 init();
